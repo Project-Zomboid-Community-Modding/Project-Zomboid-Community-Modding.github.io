@@ -1,8 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=steam://openurl/" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<script>
+        // Get the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        // Get the 'url' parameter value
+        const targetURL = urlParams.get('url');
+        // If a target URL is provided, redirect to it
+        if (targetURL) {
+            window.location.replace(targetURL);
+        } else {
+            // If no target URL is provided, display a message or redirect to a default URL
+            document.write("No target URL provided.");
+            // You can uncomment the line below to redirect to a default URL
+            // window.location.replace("https://www.example.com");
+        }
+    </script>
 </body>
 </html>
