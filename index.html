@@ -11,24 +11,21 @@
     <button onclick="redirect()">Redirect</button>
 </div>
 <script>
-    var steamWindow = null; // To store reference to the opened window
+
+    function openSteamURL(url) {
+        if (url.trim() !== '') { return window.open(url, '_blank'); }
+        return null;
+    }
 
     function redirect() {
         const targetURL = document.getElementById('urlInput').value;
         if (targetURL.trim() !== '') {
             window.location.href = targetURL;
             const steamURL = "steam://openurl/" + targetURL;
-            steamWindow = openSteamURL(steamURL);
+            openSteamURL(steamURL);
         } else {
             alert("Please enter a valid URL.");
         }
-    }
-
-    function openSteamURL(url) {
-        if (url.trim() !== '') {
-            return window.open(url, '_blank');
-        }
-        return null;
     }
 
     function getUrlParameter(name) {
@@ -42,15 +39,13 @@
         if (url.trim() !== '') {
             window.location.href = url;
             const steamURL = "steam://openurl/" + url;
-            steamWindow = openSteamURL(steamURL);
+            openSteamURL(steamURL);
         }
     }
 
     window.onload = function() {
         var urlParam = getUrlParameter('url');
-        if (urlParam !== '') {
-            redirectWithUrlParam(urlParam);
-        }
+        if (urlParam !== '') { redirectWithUrlParam(urlParam); }
     };
 
 </script>
