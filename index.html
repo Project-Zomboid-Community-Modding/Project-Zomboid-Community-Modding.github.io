@@ -10,21 +10,42 @@
     <input type="text" id="urlInput" placeholder="Enter URL">
     <button onclick="redirect()">Redirect</button>
 </div>
-
 <script>
-        // Function to redirect to a URL
-        function redirect() {
-            // Get the value from the input field
-            const targetURL = document.getElementById('urlInput').value;
-            // Check if a URL is provided
-            if (targetURL.trim() !== '') {
-                // If a URL is provided, add "steam://openurl/" prefix and redirect
-                const steamURL = "steam://openurl/" + targetURL;
-                window.location.replace(steamURL);
-            } else {
-                window.location.replace(targetURL);
-            }
+    function redirect() {
+        const targetURL = document.getElementById('urlInput').value;
+        if (targetURL.trim() !== '') {
+            const steamURL = "steam://openurl/" + targetURL;
+            window.location.replace(steamURL);
+        } else {
+            window.location.replace(targetURL);
         }
-    </script>
+    }
+
+    // Function to get URL parameters
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    // Check if URL parameter 'url' is present and redirect if it is
+    window.onload = function() {
+        var urlParam = getUrlParameter('url');
+        if (urlParam !== '') {
+            redirectWithUrlParam(urlParam);
+        }
+    };
+
+    // Function to redirect with URL parameter
+    function redirectWithUrlParam(url) {
+        if (url.trim() !== '') {
+            const steamURL = "steam://openurl/" + url;
+            window.location.replace(steamURL);
+        } else {
+            window.location.replace(url);
+        }
+    }
+</script>
 </body>
 </html>
