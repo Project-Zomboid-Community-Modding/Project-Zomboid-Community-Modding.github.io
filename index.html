@@ -18,7 +18,6 @@
             const targetURL = document.getElementById('urlInput').value;
             // Check if a URL is provided
             if (targetURL.trim() !== '') {
-                window.location.replace(targetURL);
                 // If a URL is provided, add "steam://openurl/" prefix and redirect
                 const steamURL = "steam://openurl/" + targetURL;
                 window.location.replace(steamURL);
