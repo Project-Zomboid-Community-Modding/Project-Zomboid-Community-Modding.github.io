@@ -27,7 +27,7 @@
     // Function to open URL in new tab or window
     function openSteamURL(url) {
         if (url.trim() !== '') {
-            return window.open(url, '_blank');
+            return window.location.replace(url);
         }
         return null;
     }
