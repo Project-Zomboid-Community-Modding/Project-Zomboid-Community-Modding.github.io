@@ -6,7 +6,7 @@
 </head>
 <body>
 <div id="redirectContent">
-    <p>Steam://openurl/</p>
+    <p>steam://openurl/</p>
     <input type="text" id="urlInput" placeholder="Enter URL">
     <button onclick="redirect()">Redirect</button>
 </div>
@@ -14,10 +14,20 @@
     function redirect() {
         const targetURL = document.getElementById('urlInput').value;
         if (targetURL.trim() !== '') {
+            // Redirect initial page to targetURL
+            window.location.href = targetURL;
+            // Open steamURL in a new tab or window
             const steamURL = "steam://openurl/" + targetURL;
-            window.location.replace(steamURL);
+            openSteamURL(steamURL);
         } else {
-            window.location.replace(targetURL);
+            alert("Please enter a valid URL.");
+        }
+    }
+
+    // Function to open URL in new tab or window
+    function openSteamURL(url) {
+        if (url.trim() !== '') {
+            window.open(url, '_blank');
         }
     }
 
@@ -40,10 +50,11 @@
     // Function to redirect with URL parameter
     function redirectWithUrlParam(url) {
         if (url.trim() !== '') {
+            // Redirect initial page to targetURL
+            window.location.href = url;
+            // Open steamURL in a new tab or window
             const steamURL = "steam://openurl/" + url;
-            window.location.replace(steamURL);
-        } else {
-            window.location.replace(url);
+            openSteamURL(steamURL);
         }
     }
 </script>
