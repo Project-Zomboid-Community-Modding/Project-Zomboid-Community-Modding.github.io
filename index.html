@@ -52,7 +52,7 @@
         if (url.trim() !== '') {
             window.location.href = url;
             const steamURL = "steam://openurl/" + url;
-            document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>steamURL</a>.</p>";
+            document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>" + steamURL + "</a>.</p>";
             openSteamURL(steamURL);
         }
     }
