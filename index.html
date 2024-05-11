@@ -42,14 +42,6 @@
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     };
 
-    // Check if URL parameter 'url' is present and redirect if it is
-    window.onload = function() {
-        var urlParam = getUrlParameter('url');
-        if (urlParam !== '') {
-            redirectWithUrlParam(urlParam);
-        }
-    };
-
     // Function to redirect with URL parameter
     function redirectWithUrlParam(url) {
         if (url.trim() !== '') {
@@ -58,15 +50,18 @@
             // Open steamURL in a new tab or window
             const steamURL = "steam://openurl/" + url;
             steamWindow = openSteamURL(steamURL);
+            steamWindow.close()
         }
     }
 
-    // Function to close the steam window
-    function closeSteamWindow() {
-        if (steamWindow != null && !steamWindow.closed) {
-            steamWindow.close();
+    // Check if URL parameter 'url' is present and redirect if it is
+    window.onload = function() {
+        var urlParam = getUrlParameter('url');
+        if (urlParam !== '') {
+            redirectWithUrlParam(urlParam);
         }
-    }
+    };
+
 </script>
 </body>
 </html>
