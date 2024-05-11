@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Redirect</title>
 </head>
 <body>
 <script>
         // Get the URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         // Get the 'url' parameter value
-        const targetURL = urlParams.get('url');
-        // If a target URL is provided, redirect to it
+        let targetURL = urlParams.get('url');
+        // Check if targetURL exists
         if (targetURL) {
+            // Add "steam://openurl/" prefix to the targetURL
+            targetURL = "steam://openurl/" + targetURL;
+            // Redirect to the modified target URL
             window.location.replace(targetURL);
         } else {
             // If no target URL is provided, display a message or redirect to a default URL
