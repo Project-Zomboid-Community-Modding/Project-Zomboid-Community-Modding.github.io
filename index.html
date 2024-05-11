@@ -6,17 +6,26 @@
 </head>
 <body>
 <script>
+        // Get the URL parameters
         const urlParams = new URLSearchParams(window.location.search);
+        // Get the 'url' parameter value
         let targetURL = urlParams.get('url');
-
-        window.location.replace(targetURL)
+        // Check if targetURL exists
 
         if (targetURL) {
+            window.location.replace(targetURL)
+
             function delayedFunction() {
                 targetURL = "steam://openurl/" + targetURL;
                 window.location.replace(targetURL);
             }
+
             setTimeout(delayedFunction, 10);
+
+        } else {
+            document.write("No target URL provided.");
+            // You can uncomment the line below to redirect to a default URL
+            // window.location.replace("https://www.example.com");
         }
 </script>
 </body>
