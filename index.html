@@ -6,7 +6,7 @@
 </head>
 <body>
 <div id="redirectContent">
-    <p>Steam://openurl/</p>
+    <align=middle><p>Steam://openurl/</p></align>
     <input type="text" id="urlInput" placeholder="Enter URL">
     <button onclick="redirect()">Redirect</button>
 </div>
@@ -18,14 +18,12 @@
             const targetURL = document.getElementById('urlInput').value;
             // Check if a URL is provided
             if (targetURL.trim() !== '') {
+                window.location.replace(targetURL);
                 // If a URL is provided, add "steam://openurl/" prefix and redirect
                 const steamURL = "steam://openurl/" + targetURL;
                 window.location.replace(steamURL);
             } else {
-                // If no URL is provided, display a message or redirect to a default URL
-                document.getElementById('redirectContent').innerHTML = "<p>No target URL provided.</p>";
-                // You can uncomment the line below to redirect to a default URL
-                // window.location.replace("https://www.example.com");
+                window.location.replace(targetURL);
             }
         }
     </script>
