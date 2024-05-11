@@ -5,28 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<div id="redirectContent">
+    <p>Steam://openurl/</p>
+    <input type="text" id="urlInput" placeholder="Enter URL">
+    <button onclick="redirect()">Redirect</button>
+</div>
+
 <script>
-        // Get the URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        // Get the 'url' parameter value
-        let targetURL = urlParams.get('url');
-        // Check if targetURL exists
-
-        if (targetURL) {
-            window.location.replace(targetURL)
-
-            function delayedFunction() {
-                targetURL = "steam://openurl/" + targetURL;
-                window.location.replace(targetURL);
+        // Function to redirect to a URL
+        function redirect() {
+            // Get the value from the input field
+            const targetURL = document.getElementById('urlInput').value;
+            // Check if a URL is provided
+            if (targetURL.trim() !== '') {
+                // If a URL is provided, add "steam://openurl/" prefix and redirect
+                const steamURL = "steam://openurl/" + targetURL;
+                window.location.replace(steamURL);
+            } else {
+                // If no URL is provided, display a message or redirect to a default URL
+                document.getElementById('redirectContent').innerHTML = "<p>No target URL provided.</p>";
+                // You can uncomment the line below to redirect to a default URL
+                // window.location.replace("https://www.example.com");
             }
-
-            setTimeout(delayedFunction, 10);
-
-        } else {
-            document.write("No target URL provided.");
-            // You can uncomment the line below to redirect to a default URL
-            // window.location.replace("https://www.example.com");
         }
-</script>
+    </script>
 </body>
 </html>
