@@ -11,23 +11,30 @@
     <button onclick="redirect()">Redirect</button>
 </div>
 <script>
-
-    function openSteamURL(url) {
-        if (url.trim() !== '') { return window.open(url, '_blank'); }
-        return null;
-    }
+    var steamWindow = null; // To store reference to the opened window
 
     function redirect() {
         const targetURL = document.getElementById('urlInput').value;
         if (targetURL.trim() !== '') {
+            // Redirect initial page to targetURL
             window.location.href = targetURL;
+            // Open steamURL in a new tab or window
             const steamURL = "steam://openurl/" + targetURL;
-            openSteamURL(steamURL);
+            steamWindow = openSteamURL(steamURL);
         } else {
             alert("Please enter a valid URL.");
         }
     }
 
+    // Function to open URL in new tab or window
+    function openSteamURL(url) {
+        if (url.trim() !== '') {
+            return window.open(url, '_blank');
+        }
+        return null;
+    }
+
+    // Function to get URL parameters
     function getUrlParameter(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -35,19 +42,39 @@
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     };
 
+    // Check if URL parameter 'url' is present and redirect if it is
+    window.onload = function() {
+        var urlParam = getUrlParameter('url');
+        if (urlParam !== '') {
+            redirectWithUrlParam(urlParam);
+        }
+    };
+
+    // Function to redirect with URL parameter
     function redirectWithUrlParam(url) {
         if (url.trim() !== '') {
+            // Redirect initial page to targetURL
             window.location.href = url;
+            // Open steamURL in a new tab or window
             const steamURL = "steam://openurl/" + url;
-            openSteamURL(steamURL);
+            steamWindow = openSteamURL(steamURL);
         }
     }
 
-    window.onload = function() {
-        var urlParam = getUrlParameter('url');
-        if (urlParam !== '') { redirectWithUrlParam(urlParam); }
-    };
+    // Function to close the steam window
+    function closeSteamWindow() {
+        if (steamWindow != null && !steamWindow.closed) {
+            steamWindow.close();
+        }
+    }
 
+    // Check if the page was redirected from a Steam URL and display message with link
+    if (document.referrer.startsWith("steam://")) {
+        var originalURL = getUrlParameter('url');
+        if (originalURL !== '') {
+            document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected from a Steam URL. <a href='" + originalURL + "'>Click here</a> to visit the original URL.</p>";
+        }
+    }
 </script>
 </body>
 </html>
