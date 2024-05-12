@@ -16,16 +16,24 @@
     function redirect() {
         const targetURL = document.getElementById('urlInput').value;
         if (targetURL.trim() !== '') {
-            // Check if targetURL is a domain
-            if (!isIPAddress(targetURL)) {
+            // Check if targetURL contains a port number
+            let hostname = targetURL;
+            let port = null;
+            const portIndex = targetURL.lastIndexOf(':');
+            if (portIndex !== -1 && !isNaN(parseInt(targetURL.slice(portIndex + 1)))) {
+                hostname = targetURL.slice(0, portIndex);
+                port = parseInt(targetURL.slice(portIndex + 1));
+            }
+            // Check if hostname is a domain
+            if (!isIPAddress(hostname)) {
                 // Perform DNS lookup to get IP address
-                dnsLookup(targetURL, function (ip) {
-                    const steamURL = "steam://openurl/" + ip;
+                dnsLookup(hostname, function (ip) {
+                    const steamURL = "steam://openurl/" + ip + (port ? (":" + port) : "");
                     openSteamURL(steamURL);
                 });
             } else {
-                // If targetURL is already an IP, proceed with redirection
-                const steamURL = "steam://openurl/" + targetURL;
+                // If hostname is already an IP, proceed with redirection
+                const steamURL = "steam://openurl/" + hostname + (port ? (":" + port) : "");
                 openSteamURL(steamURL);
             }
         } else {
