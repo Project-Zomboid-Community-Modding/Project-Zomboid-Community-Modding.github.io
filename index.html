@@ -5,6 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<style type="text/css">
+    .fullscreen-bg {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .fullscreen-bg__video {
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+    .fullscreen-bg__video_mobile {
+        display: none;
+    }
+
+    .store_bg_overlay {
+        width: 1854px;
+        height: 450px;
+        z-index: 800;
+        position: absolute;
+        margin-left: 50%;
+        transform: translateX(-50%);
+        pointer-events: none;
+    }
+
+    .gradient_width {
+        width: 200px;
+        height: 100%;
+        pointer-events: none;
+    }
+
+                    .gradient_left {
+        position: absolute;
+        left: 0;
+        background: -webkit-gradient(linear, right top, left top, color-stop(0%, rgba( 11,8,9,0 ) ), color-stop(100%, rgba(11,8,9,1) ) );
+    }
+
+    .gradient_right {
+        position: absolute;
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba( 11,8,9, 0 ) ), color-stop(100%, rgba(11,8,9,1) ) );
+        right: 0;
+    }
+</style>
+
 <div id="redirectContent">
     <p>Steam://openurl/</p>
     <input type="text" id="urlInput" placeholder="Enter URL">
