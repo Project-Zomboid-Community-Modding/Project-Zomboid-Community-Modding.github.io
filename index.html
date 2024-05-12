@@ -46,14 +46,20 @@
     window.onload = function() {
         var urlParam = getUrlParameter('url');
         if (urlParam !== '') {
-            redirectWithUrlParam(urlParam);
+            var actionParam = getUrlParameter('action');
+            redirectWithUrlParam(urlParam, actionParam);
         }
     };
 
-    function redirectWithUrlParam(url) {
+    function redirectWithUrlParam(url, action) {
         if (url.trim() !== '') {
             window.location.href = url;
-            const steamURL = "steam://openurl/" + url;
+
+            if (action == '') {
+                action = "openurl"
+            }
+           
+            const steamURL = "steam://" + action + "/" + url;
             document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>" + steamURL + "</a>.</p>";
             openSteamURL(steamURL);
         }
