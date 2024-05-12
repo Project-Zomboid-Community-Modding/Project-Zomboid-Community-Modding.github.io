@@ -1,86 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<HTML lang="en">
+<HEAD>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheet/main.css">
-</head>
-<body>
+    <link rel="stylesheet" href="stylesheet/Main.css">
+</HEAD>
 
-<div id="redirectContent">
-    <p>Steam://openurl/</p>
-    <input type="text" id="urlInput" placeholder="Enter URL">
-    <button onclick="redirect()">Redirect</button>
-</div>
-<script>
-    function redirect() {
-        const targetURL = document.getElementById('urlInput').value;
-        if (targetURL.trim() !== '') {
-            window.location.href = targetURL;
-            openSteamURL("steam://openurl/" + targetURL);
-        } else {
-            alert("Please enter a valid URL.");
-        }
-    }
+<BODY>
+<DIV id="RedirectControl">
+    <p>Steam://openurl/ <input type="text" id="urlInput" placeholder="Enter URL"></p>
 
-    // Function to open URL in new tab or window
-    function openSteamURL(url) {
-        if (url.trim() !== '') {
-            return window.location.replace(url);
-        }
-        return null;
-    }
+    <button onclick="getRedirect()">Create and copy the redirect link</button>
+</DIV>
 
-    // Function to check if the given string is an IP address
-    function isIPAddress(str) {
-        var ipFormat = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
-        return ipFormat.test(str);
-    }
+<DIV id="Redirecting">
+    <p id="description">Someone wishes to redirect you towards:<br></p>
+    <button onclick="openBrowser()">Continue</button>
+    <button onclick="openSteam()">Open in Steam</button>
+</DIV>
 
-    // Function to perform DNS lookup
-    function dnsLookup(domain, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    var ip = xhr.responseText;
-                    callback(ip);
-                } else {
-                    console.error("Error fetching IP for domain: " + domain);
-                }
-            }
-        };
-        xhr.open("GET", "https://api.ipify.org?format=json&domain=" + domain, true);
-        xhr.send();
-    }
-
-    // Function to get URL parameters
-    function getUrlParameter(name) {
+<SCRIPT>
+      function getUrlParameter(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
         var results = regex.exec(location.search);
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    };
+      };
 
-    // Check if URL parameter 'url' is present and redirect if it is
-    window.onload = function() {
-        var urlParam = getUrlParameter('url');
+      function getRedirect(){
+        const targetURL = document.getElementById("urlInput").value;
+        if (targetURL.trim() !== '')
+          navigator.clipboard.writeText("https://project-zomboid-community-modding.github.io/?url=" + targetURL);
+        else
+          alert("Please enter a valid URL.");
+      }
+
+      function openBrowser(){
+        window.open(urlParam, "_self");
+      }
+
+      function openSteam(){
+        window.open('steam://openurl/' + urlParam, "_self")
+        window.close();
+      }
+
+      window.onload = function(){
+        urlParam = getUrlParameter('url');
         if (urlParam !== '') {
-            var actionParam = getUrlParameter('action');
-            if (!isIPAddress(urlParam)) {
-                // Perform DNS lookup to get IP address
-                dnsLookup(urlParam, function (ip) {
-                    const steamURL = "steam://openurl/" + ip;
-                    openSteamURL(steamURL);
-                });
-            } else {
-                // If targetURL is already an IP, proceed with redirection
-                const steamURL = "steam://openurl/" + urlParam;
-                openSteamURL(steamURL);
-            }
-        }
-    };
+	  let ih = document.getElementById("description");
+	  ih.innerHTML = `${ih.innerHTML}<a href="${urlParam}">${urlParam}</a>`;
+	  console.log(ih.innerHTML);
+          document.getElementById("RedirectControl").remove();
+	} else {
+	  console.log("Removing redirecting");
+          document.getElementById("Redirecting").remove();
+	}
+      }
+    </SCRIPT>
 
-</script>
-</body>
-</html>
+</BODY>
+</HTML>
