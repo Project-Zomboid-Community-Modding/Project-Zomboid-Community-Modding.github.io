@@ -1,62 +1,70 @@
 <!DOCTYPE html>
-<HTML lang="en">
-<HEAD>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheet/Main.css">
-</HEAD>
+    <link rel="stylesheet" href="stylesheet/main.css">
+</head>
+<body>
 
-<BODY>
-<DIV id="RedirectControl">
-    <p>Steam://openurl/ <input type="text" id="urlInput" placeholder="Enter URL"></p>
+<div id="redirectContent">
+    <p>Steam://openurl/</p>
+    <input type="text" id="urlInput" placeholder="Enter URL">
+    <button onclick="redirect()">Redirect</button>
+</div>
+<script>
+    function redirect() {
+        const targetURL = document.getElementById('urlInput').value;
+        if (targetURL.trim() !== '') {
+            // Redirect initial page to targetURL
+            window.location.href = targetURL;
+            // Open steamURL in a new tab or window
+            const steamURL = "steam://openurl/" + targetURL;
+            openSteamURL(steamURL);
+        } else {
+            alert("Please enter a valid URL.");
+        }
+    }
 
-    <button onclick="getRedirect()">Create and copy the redirect link</button>
-</DIV>
+    // Function to open URL in new tab or window
+    function openSteamURL(url) {
+        if (url.trim() !== '') {
+            return window.location.replace(url);
+        }
+        return null;
+    }
 
-<DIV id="Redirecting">
-    <p id="description">Someone wishes to redirect you towards:<br></p>
-    <button onclick="openBrowser()">Continue</button>
-    <button onclick="openSteam()">Open in Steam</button>
-</DIV>
-
-<SCRIPT>
-      function getUrlParameter(name) {
+    // Function to get URL parameters
+    function getUrlParameter(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
         var results = regex.exec(location.search);
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-      };
+    };
 
-      function getRedirect(){
-        const targetURL = document.getElementById("urlInput").value;
-        if (targetURL.trim() !== '')
-          navigator.clipboard.writeText("https://project-zomboid-community-modding.github.io/?url=" + targetURL);
-        else
-          alert("Please enter a valid URL.");
-      }
-
-      function openBrowser(){
-        window.open(urlParam, "_self");
-      }
-
-      function openSteam(){
-        window.open('steam://openurl/' + urlParam, "_self")
-        window.close();
-      }
-
-      window.onload = function(){
-        urlParam = getUrlParameter('url');
+    // Check if URL parameter 'url' is present and redirect if it is
+    window.onload = function() {
+        var urlParam = getUrlParameter('url');
         if (urlParam !== '') {
-	  let ih = document.getElementById("description");
-	  ih.innerHTML = `${ih.innerHTML}<a href="${urlParam}">${urlParam}</a>`;
-	  console.log(ih.innerHTML);
-          document.getElementById("RedirectControl").remove();
-	} else {
-	  console.log("Removing redirecting");
-          document.getElementById("Redirecting").remove();
-	}
-      }
-    </SCRIPT>
+            var actionParam = getUrlParameter('action');
+            redirectWithUrlParam(urlParam, actionParam);
+        }
+    };
 
-</BODY>
-</HTML>
+    function redirectWithUrlParam(url, action) {
+        if (url.trim() !== '') {
+            window.location.href = url;
+
+            if (action == '') {
+                action = "openurl"
+            }
+           
+            const steamURL = "steam://" + action + "/" + url;
+            document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>" + steamURL + "</a>.</p>";
+            openSteamURL(steamURL);
+        }
+    }
+
+</script>
+</body>
+</html>
