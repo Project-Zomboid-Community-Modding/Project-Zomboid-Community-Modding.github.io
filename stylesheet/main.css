@@ -1,20 +1,36 @@
 body {
-    background-color: #051e3e; /* Dark blue background color */
-    color: white; /* White text color */
-    font-family: 'Motiva', sans-serif; /* Motiva font */
+    background-color: #171a21; /* Dark blue background color similar to Steam */
+    color: #c6d4df; /* Light text color similar to Steam */
+    font-family: Arial, sans-serif; /* Similar to Steam's font */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100vh; /* Full viewport height */
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
     padding: 20px;
     text-align: center;
 }
 
 h1 {
     font-size: 36px;
+    color: #66c0f4; /* Blue color similar to Steam */
 }
 
 p {
     font-size: 18px;
+    line-height: 1.5;
+}
+
+a {
+    color: #66c0f4; /* Blue color similar to Steam */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
