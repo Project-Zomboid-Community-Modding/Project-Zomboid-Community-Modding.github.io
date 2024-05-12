@@ -16,11 +16,18 @@
     function redirect() {
         const targetURL = document.getElementById('urlInput').value;
         if (targetURL.trim() !== '') {
-            // Redirect initial page to targetURL
-            window.location.href = targetURL;
-            // Open steamURL in a new tab or window
-            const steamURL = "steam://openurl/" + targetURL;
-            openSteamURL(steamURL);
+            // Check if targetURL is a domain
+            if (!isIPAddress(targetURL)) {
+                // Perform DNS lookup to get IP address
+                dnsLookup(targetURL, function (ip) {
+                    const steamURL = "steam://openurl/" + ip;
+                    openSteamURL(steamURL);
+                });
+            } else {
+                // If targetURL is already an IP, proceed with redirection
+                const steamURL = "steam://openurl/" + targetURL;
+                openSteamURL(steamURL);
+            }
         } else {
             alert("Please enter a valid URL.");
         }
@@ -32,6 +39,29 @@
             return window.location.replace(url);
         }
         return null;
+    }
+
+    // Function to check if the given string is an IP address
+    function isIPAddress(str) {
+        var ipFormat = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+        return ipFormat.test(str);
+    }
+
+    // Function to perform DNS lookup
+    function dnsLookup(domain, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var ip = xhr.responseText;
+                    callback(ip);
+                } else {
+                    console.error("Error fetching IP for domain: " + domain);
+                }
+            }
+        };
+        xhr.open("GET", "https://api.ipify.org?format=json&domain=" + domain, true);
+        xhr.send();
     }
 
     // Function to get URL parameters
@@ -58,7 +88,7 @@
             if (action == '') {
                 action = "openurl"
             }
-           
+
             const steamURL = "steam://" + action + "/" + url;
             document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>" + steamURL + "</a>.</p>";
             openSteamURL(steamURL);
