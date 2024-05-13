@@ -1,19 +1,75 @@
 body {
-    background-color: #171a21; /* Dark blue background color similar to Steam */
-    color: #c6d4df; /* Light text color similar to Steam */
-    font-family: Arial, sans-serif; /* Similar to Steam's font */
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    height: 100vh; /* Full viewport height */
-    text-align: center; /* Center text horizontally */
+	background-color: #171a21;
+	color: #c6d4df;
+	font-family: Arial, sans-serif;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+  width: 100vw;
+	text-align: center;
 }
 
 .container {
     max-width: 800px;
     padding: 20px;
+}
+
+button {
+  border-radius: 2px;
+  border: none;
+  font-size: 16px;
+  padding: 8px;
+  display: inline-block;
+  cursor: pointer;
+  color: #D2E885;
+  background: #a2a225;
+  background: -webkit-linear-gradient( top, #a2a225 5%, #695304 95%);
+  background: linear-gradient( to bottom, #a2a225 5%, #695304 95%);
+}
+
+button:disabled,
+button[disabled] {
+  background: #aaa;
+  background: -webkit-linear-gradient( top, #aaa 5%, #666 95%);
+  background: linear-gradient( to bottom, #aaa 5%, #666 95%);
+}
+
+button.linkSteam {
+  background: #a4d007;
+  background: -webkit-linear-gradient( top, #a4d007 5%, #536904 95%);
+  background: linear-gradient( to bottom, #a4d007 5%, #536904 95%);
+}
+
+span {
+  font-size:12px;
+  height: 16px;
+  text-align: center;
+  color: #777;
+  margin-top: 30px;
+  display: block;
+}
+
+span.error {
+  color: #f00;
+}
+
+span.success {
+  color: #0f0;
+}
+
+div {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+div#createOptions {
+  display: flex;
+}
+
+div.option {
+  width: 400px;
 }
 
 h1 {
@@ -33,4 +89,18 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+@media (max-width:919px) {
+  div.option {
+    width: 400px;
+  }
+}
+@media (max-width:700px) {
+  div#createOptions {
+    display: block;
+  }
+  div {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
 }

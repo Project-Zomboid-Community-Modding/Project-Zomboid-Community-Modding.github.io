@@ -1,69 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheet/main.css">
-</head>
-<body>
+  </head>
 
-<div id="redirectContent">
-    <p>Steam://openurl/<input type="text" id="urlInput" placeholder="Enter URL"></p>
-    <button onclick="redirect()">Redirect</button>
-</div>
-<script>
-    function redirect() {
-        const targetURL = document.getElementById('urlInput').value;
-        if (targetURL.trim() !== '') {
-            // Redirect initial page to targetURL
-            window.location.href = targetURL;
-            // Open steamURL in a new tab or window
-            const steamURL = "steam://openurl/" + targetURL;
-            openSteamURL(steamURL);
-        } else {
-            alert("Please enter a valid URL.");
-        }
+  <script>
+    function showInfo(text, error) {
+      const infoEle = document.getElementById("InfoSpan");
+      infoEle.textContent = text;
+      infoEle.className = error ? "error" : "success";
     }
 
-    // Function to open URL in new tab or window
-    function openSteamURL(url) {
-        if (url.trim() !== '') {
-            return window.location.replace(url);
-        }
-        return null;
+    async function resolveURL(url, port) {
+      let a = await fetch("https://dns.google/resolve?name=" + url.hostname)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.Answer) {
+            return true;
+          } else {
+            throw("Unresolved URL")
+          }
+        })
+        .catch((e)=>{
+          showInfo("Could not Resolve the URL", true);
+          return false;
+        })
+        return a;
     }
 
-    // Function to get URL parameters
-    function getUrlParameter(name) {
-        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-        var results = regex.exec(location.search);
-        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    };
+    function toggleButtons(state) {
+      const urlbtn = document.getElementById("copyURLBtn");
+      const connectbtn = document.getElementById("connectBtn");
+      urlbtn.disabled = state;
+      connectbtn.disabled = state;
+    }
 
-    // Check if URL parameter 'url' is present and redirect if it is
+    async function CopyURL() {
+      toggleButtons(true);
+      const urlInput = document.getElementById("urlInput").value.trim();
+      const urlbtn = document.getElementById("copyURLBtn");
+      const connectbtn = document.getElementById("connectBtn");
+      try {
+        const url = new URL(urlInput);
+        if (!/(([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}/.test(url.hostname))
+          throw("Invalid URL.")
+        if (url.protocol !== "http:" && url.protocol !== "https:")
+          throw("Invalid Protocol.");
+        let urltest = await resolveURL(url);
+        if(!urltest)
+          throw("URL could not be resolved.");
+        showInfo("Successfully copied!");
+        navigator.clipboard.writeText(`${location.origin}/?url=${encodeURIComponent(url)}`);
+      } catch(e) {
+        showInfo(e, true);
+      } finally {
+        toggleButtons(false);
+      }
+    }
+
+    async function CopyConnect() {
+      const domainInput = document.getElementById("domainInput").value.trim();
+      const portInput = document.getElementById("portInput").value.trim();
+      const passInput = document.getElementById("passInput").value;
+      toggleButtons(true);
+      const resp = await fetch("https://dns.google/resolve?name=" + domainInput)
+        .then(response => response.json())
+        .then(data => data.Answer[0].data )
+        .catch((e) => {console.error(e);return false;});
+      console.log(resp);
+      if (!resp)
+        showInfo("Could not resolve domain.");
+      else {
+        let url = resp + ":" + portInput;
+        if (passInput !== "")
+          url += "/" + passInput;
+        navigator.clipboard.writeText(`${location.origin}/?action=connect&url=` + encodeURIComponent(url));
+        showInfo("Successfully copied!");
+      }
+      toggleButtons(false);
+    }
+
     window.onload = function() {
-        var urlParam = getUrlParameter('url');
-        if (urlParam !== '') {
-            var actionParam = getUrlParameter('action');
-            redirectWithUrlParam(urlParam, actionParam);
+      const search = new URLSearchParams(location.search);
+      const urldata = search.get("url");
+      const action = search.get("action");
+      if (urldata !== null) {
+        console.log(urldata);
+        const url = decodeURIComponent(urldata);
+        document.getElementById("createOptions").remove()
+        if (action === "connect") {
+          // Setup Connect!
+          document.getElementById("redirectOptions").remove()
+          document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
+          document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
+          showInfo("INFO: Never give your account information away!", true)
+        } else {
+          // Setup Redirect!redirectOptions
+          document.getElementById("connectOptions").remove()
+          document.getElementById("inBrowserBtn").onclick = () => window.open(url, "_self")
+          document.getElementById("inSteamBtn").onclick = () => window.open("steam://openurl/" + url, "_self")
+          document.getElementById("HeaderInfo").innerHTML = "Someone wants to send you to <a href=" + url + ">" + url + "</a>";
+          showInfo("Please only continue if you trust the site in question.", true)
         }
-    };
-
-    function redirectWithUrlParam(url, action) {
-        if (url.trim() !== '') {
-            window.location.href = url;
-
-            if (action == '') {
-                action = "openurl"
-            }
-
-            const steamURL = "steam://" + action + "/" + url;
-            document.getElementById("redirectContent").innerHTML = "<p>This page has been redirected: <a href='" + steamURL + "'>" + steamURL + "</a>.</p>";
-            openSteamURL(steamURL);
-        }
+        return;
+      }
+      document.getElementById("redirectOptions").remove()
+      document.getElementById("connectOptions").remove()
     }
+  </script>
 
-</script>
-</body>
+  <body>
+    <div class="cover">
+      <p id="HeaderInfo"></p>
+      <div id="connectOptions" style="display:block;">
+        <button id="joinBtn">Join!</button>
+      </div>
+
+      <div id="redirectOptions" style="display:flex;">
+        <button id="inBrowserBtn" style="margin:10px;">Continue in browser</button>
+        <button id="inSteamBtn" class="linkSteam" style="margin:10px;">Open in Steam</button>
+      </div>
+
+
+      <div id="createOptions">
+        <div id="redirectURL" class="option">
+          <h2>Create a steam link:</h2>
+          <p>
+            steam://openurl/<input type="text" id="urlInput" placeholder="Enter URL">
+          </p>
+          <button id="copyURLBtn" onclick="CopyURL()">Validate and copy to clipboard</button>
+        </div>
+
+        <div id="redirectConnect" class="option">
+          <h2>Create a connect link:</h2>
+          <p>
+            <input type="text" id="domainInput" placeholder="Enter Domain or IP">:<input type="text" id="portInput" placeholder="(optional) Port">
+            <br>
+            Password: <input type="text" id="passInput" placeholder="(optional) Password">
+          </p>
+          <button id="connectBtn" onclick="CopyConnect()">Resolve and copy to clipboard</button>
+        </div>
+      </div>
+      <span id="InfoSpan" class="Note">ChucklingBerry Finn</span>
+    </div>
+
+  </body>
+
 </html>
