@@ -68,9 +68,16 @@
       toggleButtons(true);
       const resp = await fetch("https://dns.google/resolve?name=" + domainInput)
         .then(response => response.json())
-        .then(data => data.Answer[0].data )
+        .then(data => { // Sift through answers for potential solution?
+          if (!data.Answer) return false;
+          for (let i = 0; i < data.Answer.length; i++) {
+            const answer = data.Answer[i];
+            if (answer.type == 1 || answer.type == 28){ // 28 is IPv6, does that work for steam connect?
+              return answer.data;
+            }
+          }
+        })
         .catch((e) => {console.error(e);return false;});
-      console.log(resp);
       if (!resp)
         showInfo("Could not resolve domain.");
       else {
