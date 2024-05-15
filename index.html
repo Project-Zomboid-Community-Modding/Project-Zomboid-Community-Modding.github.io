@@ -106,7 +106,7 @@
       const action = search.get("action");
       if (urldata !== null) {
         console.log(urldata);
-        const url = decodeURIComponent(urldata);
+        let url = decodeURIComponent(urldata);
         document.getElementById("createOptions").remove()
         if (action === "connect") {
           // Setup Connect!
