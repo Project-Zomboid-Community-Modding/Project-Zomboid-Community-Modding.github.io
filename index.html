@@ -61,12 +61,8 @@
       }
     }
 
-    async function CopyConnect() {
-      const domainInput = document.getElementById("domainInput").value.trim();
-      const portInput = document.getElementById("portInput").value.trim();
-      const passInput = document.getElementById("passInput").value;
-      toggleButtons(true);
-      const resp = await fetch("https://dns.google/resolve?name=" + domainInput)
+    function resolveDomain(domainInput) {
+      const resolved = await fetch("https://dns.google/resolve?name=" + domainInput)
         .then(response => response.json())
         .then(data => { // Sift through answers for potential solution?
           if (!data.Answer) return false;
@@ -78,6 +74,15 @@
           }
         })
         .catch((e) => {console.error(e);return false;});
+        return resolved
+    }
+
+    async function CopyConnect() {
+      const domainInput = document.getElementById("domainInput").value.trim();
+      const portInput = document.getElementById("portInput").value.trim();
+      const passInput = document.getElementById("passInput").value;
+      toggleButtons(true);
+      const resp = resolveDomain(domainInput)
       if (!resp)
         showInfo("Could not resolve domain.");
       else {
@@ -102,8 +107,19 @@
           // Setup Connect!
           document.getElementById("redirectOptions").remove()
           document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
-          document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
-          showInfo("INFO: Never give your account information away!", true)
+
+          const parts = url.split(':');
+          const domainInput = parts[0]
+          const portInput = parts[1]
+          toggleButtons(true);
+          const resp = resolveDomain(domainInput)
+          if (!resp)
+            showInfo("Could not resolve domain.");
+          else {
+            document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
+            showInfo("INFO: Never give your account information away!", true);
+          }
+
         } else {
           // Setup Redirect!redirectOptions
           document.getElementById("connectOptions").remove()
