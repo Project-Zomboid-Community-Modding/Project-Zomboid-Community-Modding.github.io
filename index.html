@@ -111,7 +111,7 @@
           const parts = url.split(':');
           const domainInput = parts[0]
           const portInput = parts[1]
-          toggleButtons(true);
+ 
           const resp = resolveDomain(domainInput)
           if (!resp)
             showInfo("Could not resolve domain.");
