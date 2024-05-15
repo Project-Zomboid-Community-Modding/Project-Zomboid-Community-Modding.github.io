@@ -116,8 +116,15 @@
           const parts = url.split(":");
           const domainInput = parts[0]
           const portInput = parts[1]
-          showInfo("A", true)
-          url = resolveDomain(domainInput) + ":" + portInput
+          showInfo("A "+domainInput+" : "+portInput, true)
+          const = resp = resolveDomain(domainInput)
+
+          if (!resp)
+            url = domainInput + ":" + portInput
+          else {
+            url = resp + ":" + portInput
+          }
+
           showInfo("B", true)
           document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
           showInfo("INFO: Never give your account information away!", true)
