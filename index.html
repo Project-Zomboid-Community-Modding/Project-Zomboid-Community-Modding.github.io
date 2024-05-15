@@ -117,7 +117,7 @@
           const domainInput = parts[0]
           const portInput = parts[1]
           showInfo("A "+domainInput+" : "+portInput, true)
-          const = resp = resolveDomain(domainInput)
+          const resp = resolveDomain(domainInput)
 
           if (!resp)
             url = domainInput + ":" + portInput
