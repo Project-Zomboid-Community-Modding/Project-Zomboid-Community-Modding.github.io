@@ -111,13 +111,14 @@
         if (action === "connect") {
           // Setup Connect!
           document.getElementById("redirectOptions").remove()
-          document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
 
           const parts = url.split(":");
           const domainInput = parts[0]
           const portInput = parts[1]
           url = resolveDomain(domainInput) + ":" + portInput
 
+          document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
+          
           document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
           showInfo("INFO: Never give your account information away!", true)
         } else {
