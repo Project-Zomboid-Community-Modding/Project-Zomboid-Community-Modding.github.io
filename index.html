@@ -14,23 +14,6 @@
       infoEle.className = error ? "error" : "success";
     }
 
-    async function resolveURL(url, port) {
-      let a = await fetch("https://dns.google/resolve?name=" + url.hostname)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.Answer) {
-            return true;
-          } else {
-            throw("Unresolved URL")
-          }
-        })
-        .catch((e)=>{
-          showInfo("Could not Resolve the URL", true);
-          return false;
-        })
-        return a;
-    }
-
     function toggleButtons(state) {
       const urlbtn = document.getElementById("copyURLBtn");
       const connectbtn = document.getElementById("connectBtn");
@@ -49,7 +32,7 @@
           throw("Invalid URL.")
         if (url.protocol !== "http:" && url.protocol !== "https:")
           throw("Invalid Protocol.");
-        let urltest = await resolveURL(url);
+        let urltest = await resolveDomain(url.hostname);
         if(!urltest)
           throw("URL could not be resolved.");
         showInfo("Successfully copied!");
@@ -63,16 +46,17 @@
 
     async function resolveDomain(domainInput) {
         try {
+            let isIP = /^[0-9\.]+/.test(domainInput); // If it's an IP, it won't need resolving.
+            if (isIP) return domainInput;
             const resp = await fetch("https://dns.google/resolve?name=" + domainInput);
             const data = await resp.json();
-            if (!data.Answer) return false;
+            if (!data.Answer) throw("Unable to resolve domain");
             for (let i = 0; i < data.Answer.length; i++) {
                 const answer = data.Answer[i];
                 if (answer.type == 1 || answer.type == 28) { // 28 is IPv6, does that work for steam connect?
                     return answer.data;
                 }
             }
-            return false;
         } catch (error) {
             console.error(error);
             return false;
@@ -100,37 +84,44 @@
     }
 
 
-    window.onload = function() {
+    window.onload = async function() {
       const search = new URLSearchParams(location.search);
       const urldata = search.get("url");
       const action = search.get("action");
+      const cover = document.getElementById("main");
+      const resInfo = document.getElementById("resolvingInfo");
+
       if (urldata !== null) {
-        console.log(urldata);
         let url = decodeURIComponent(urldata);
         document.getElementById("createOptions").remove()
         if (action === "connect") {
           // Setup Connect!
+          cover.hidden = true;
+          resInfo.hidden = false;
           document.getElementById("redirectOptions").remove()
           document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
-
+          const joinBtn = document.getElementById("joinBtn");
           const parts = url.split(":");
           const domainInput = parts[0]
           const portInput = parts[1]
-          const resp = resolveDomain(domainInput)
-          if (!resp)
-            url = domainInput + ":" + portInput
-          else {
+          const resp = await resolveDomain(domainInput)
+          if (!resp) {
+            joinBtn.disabled = true;
+            showInfo("Unable to resolve the domain. Try refreshing the page.", true);
+          } else {
             url = resp + ":" + portInput
+            joinBtn.onclick = () => window.open("steam://connect/" + url, "_self");
+            showInfo("INFO: Never give your account information away!", true);
           }
-          document.getElementById("joinBtn").onclick = () => window.open("steam://connect/" + url, "_self")
-          showInfo("INFO: Never give your account information away!", true)
+          cover.hidden = false;
+          resInfo.hidden = true;
         } else {
           // Setup Redirect!redirectOptions
-          document.getElementById("connectOptions").remove()
-          document.getElementById("inBrowserBtn").onclick = () => window.open(url, "_self")
-          document.getElementById("inSteamBtn").onclick = () => window.open("steam://openurl/" + url, "_self")
+          document.getElementById("connectOptions").remove();
+          document.getElementById("inBrowserBtn").onclick = () => window.open(url, "_self");
+          document.getElementById("inSteamBtn").onclick = () => window.open("steam://openurl/" + url, "_self");
           document.getElementById("HeaderInfo").innerHTML = "Someone wants to send you to <a href=" + url + ">" + url + "</a>";
-          showInfo("Please only continue if you trust the site in question.", true)
+          showInfo("Please only continue if you trust the site in question.", true);
         }
         return;
       }
@@ -140,7 +131,8 @@
   </script>
 
   <body>
-    <div class="cover">
+
+    <div class="cover" id="main">
       <p id="HeaderInfo"></p>
       <div id="connectOptions" style="display:block;">
         <button id="joinBtn">Join!</button>
@@ -173,7 +165,9 @@
       </div>
       <span id="InfoSpan" class="Note">ChucklingBerry Finn</span>
     </div>
-
+    <div id="resolvingInfo" class="cover" hidden="true">
+      <p>Resolving...<br>Please wait.</p>
+    </div>
   </body>
 
 </html>
