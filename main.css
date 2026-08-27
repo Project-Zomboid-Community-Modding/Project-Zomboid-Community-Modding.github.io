@@ -9,8 +9,8 @@
     --panel: rgba(255,255,255,0.05);
     --panel-border: rgba(255,255,255,0.12);
     --panel-hover: rgba(255,255,255,0.09);
-    --serif: 'Cormorant Garamond', Georgia, serif;
-    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --serif: 'Cinzel', serif;
+    --sans: 'Cinzel', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
