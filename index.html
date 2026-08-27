@@ -1,188 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Zomboid Community Modding</title>
+<link rel="icon" href="assets/pfp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-purple: #2d1c4f;
+    --bg-navy: #1a222e;
+    --bg-blue: #395d76;
+    --ink: #eeeaf7;
+    --ink-dim: #a79bc9;
+    --accent: #8ab512;
+    --accent-dim: #5c7d0c;
+    --panel: rgba(255,255,255,0.05);
+    --panel-border: rgba(255,255,255,0.12);
+    --panel-hover: rgba(255,255,255,0.09);
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 18%, rgba(57,93,118,0.55), transparent 60%),
+      linear-gradient(155deg, var(--bg-purple) 0%, var(--bg-navy) 55%, var(--bg-navy) 100%);
+  }
+  a { color: inherit; }
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="stylesheet/main.css">
-  </head>
+  /* ---- top banner trim ---- */
+  .banner {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .banner-panel {
+    flex: 1 1 260px;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .banner-left {
+    background: rgba(255,255,255,0.04);
+  }
+  .banner-left .wordmark-sub {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink-dim);
+    display: block;
+    line-height: 1.2;
+  }
+  .banner-left .wordmark-main {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 22px;
+    display: block;
+    line-height: 1.2;
+  }
+  .banner-right {
+    background: rgba(0,0,0,0.15);
+    justify-content: flex-end;
+  }
+  .gh-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.15s ease;
+  }
+  .gh-link:hover { background: var(--accent); }
+  .gh-link svg { width: 18px; height: 18px; flex-shrink: 0; }
 
-  <script>
-    function showInfo(text, error) {
-      const infoEle = document.getElementById("InfoSpan");
-      infoEle.textContent = text;
-      infoEle.className = error ? "error" : "success";
-    }
+  /* ---- hero ---- */
+  .hero {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 64px 24px 24px;
+    text-align: center;
+  }
+  .hero img {
+    width: min(430px, 80vw);
+    border-radius: 18px;
+    box-shadow: 0 18px 34px rgba(0,0,0,0.45), 0 0 0 1px var(--panel-border);
+  }
+  .hero .eyebrow {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(18px, 3vw, 24px);
+    color: var(--ink-dim);
+    margin: 20px 0 4px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(38px, 7vw, 62px);
+    margin: 0 0 22px;
+    line-height: 1.05;
+  }
+  .hero p.mission {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(17px, 2.4vw, 21px);
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 640px;
+    margin: 0 auto;
+  }
 
-    function toggleButtons(state) {
-      const urlbtn = document.getElementById("copyURLBtn");
-      const connectbtn = document.getElementById("connectBtn");
-      urlbtn.disabled = state;
-      connectbtn.disabled = state;
-    }
+  /* ---- tool grid ---- */
+  .tools {
+    max-width: 960px;
+    margin: 56px auto 0;
+    padding: 0 24px;
+  }
+  .tools h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 26px;
+    text-align: center;
+    margin: 0 0 8px;
+  }
+  .tools .sub {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 14px;
+    margin: 0 0 32px;
+  }
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 26px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  }
+  .tool-card:hover {
+    background: var(--panel-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .tool-card .tool-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .tool-card .tool-icon svg { width: 22px; height: 22px; }
+  .tool-card h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 21px;
+    margin: 0 0 8px;
+  }
+  .tool-card p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    margin: 0 0 18px;
+    flex-grow: 1;
+  }
+  .tool-card .launch {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tool-card .launch svg { width: 14px; height: 14px; transition: transform 0.15s ease; }
+  .tool-card:hover .launch svg { transform: translateX(3px); }
 
-    async function CopyURL() {
-      toggleButtons(true);
-      const urlInput = document.getElementById("urlInput").value.trim();
-      const urlbtn = document.getElementById("copyURLBtn");
-      const connectbtn = document.getElementById("connectBtn");
-      try {
-        const url = new URL(urlInput);
-        if (!/(([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}/.test(url.hostname))
-          throw("Invalid URL.")
-        if (url.protocol !== "http:" && url.protocol !== "https:")
-          throw("Invalid Protocol.");
-        let urltest = await resolveDomain(url.hostname);
-        if(!urltest)
-          throw("URL could not be resolved.");
-        showInfo("Successfully copied!");
-        navigator.clipboard.writeText(`${location.origin}/?url=${encodeURIComponent(url)}`);
-      } catch(e) {
-        showInfo(e, true);
-      } finally {
-        toggleButtons(false);
-      }
-    }
+  .tool-card.more {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-style: dashed;
+    color: var(--ink-dim);
+  }
+  .tool-card.more:hover { transform: none; border-color: var(--panel-border); background: var(--panel); }
+  .tool-card.more p { margin: 0; flex-grow: 0; font-style: italic; font-family: var(--serif); font-size: 16px; }
 
-    async function resolveDomain(domainInput) {
-        try {
-            let isIP = /^[0-9\.]+/.test(domainInput); // If it's an IP, it won't need resolving.
-            if (isIP) return domainInput;
-            const resp = await fetch("https://dns.google/resolve?name=" + domainInput);
-            const data = await resp.json();
-            if (!data.Answer) throw("Unable to resolve domain");
-            for (let i = 0; i < data.Answer.length; i++) {
-                const answer = data.Answer[i];
-                if (answer.type == 1 || answer.type == 28) { // 28 is IPv6, does that work for steam connect?
-                    return answer.data;
-                }
-            }
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }
+  /* ---- footer ---- */
+  footer {
+    max-width: 960px;
+    margin: 64px auto 0;
+    padding: 28px 24px 40px;
+    text-align: center;
+  }
+  .discord-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 10px 12px 10px 22px;
+    text-decoration: none;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+  .discord-cta .label { font-size: 14px; }
+  .discord-cta .label strong { display: block; font-family: var(--serif); font-size: 17px; font-weight: 600; }
+  .discord-cta .go {
+    background: var(--accent);
+    color: #17210a;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 999px;
+  }
+  footer .copyright {
+    font-size: 12px;
+    color: var(--ink-dim);
+    opacity: 0.7;
+  }
 
-    async function CopyConnect() {
-        const domainInput = document.getElementById("domainInput").value.trim();
-        const portInput = document.getElementById("portInput").value.trim();
-        const passInput = document.getElementById("passInput").value;
-        toggleButtons(true);
+  @media (max-width: 620px) {
+    .banner { flex-direction: column; }
+    .banner-right { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
 
-        const resp = await resolveDomain(domainInput);
-        if (!resp)
-            showInfo("Could not resolve domain.");
-        else {
-            let url = resp + ":" + portInput;
-            if (passInput !== "")
-                url += "/" + passInput;
-            navigator.clipboard.writeText(`${location.origin}/?action=connect&url=` + encodeURIComponent(url));
-            showInfo("Successfully copied!");
-        }
+  <div class="banner">
+    <div class="banner-panel banner-right">
+      <a class="gh-link" href="https://discord.gg/vgEMkbRsN5" target="_blank" rel="noopener">Visit the Discord</a>
+      <a class="gh-link" href="https://github.com/Project-Zomboid-Community-Modding" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Visit the GitHub
+      </a>
+    </div>
+  </div>
 
-        toggleButtons(false);
-    }
+  <div class="hero">
+    <h2>Project Zomboid</h2>
+    <h1>Community Modding</h1>
+  </div>
+  <div class="tools">
+    <h2>Browser Based Tools</h2>
+    <br>
+    <div class="tool-grid">
+      <a class="tool-card" href="tools/steam-link/">
+        <h3>Steam Link Creator</h3>
+        <span class="launch">Open tool <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></span>
+      </a>
 
-
-    window.onload = async function() {
-      const search = new URLSearchParams(location.search);
-      const urldata = search.get("url");
-      const action = search.get("action");
-      const cover = document.getElementById("main");
-      const resInfo = document.getElementById("resolvingInfo");
-
-      if (urldata !== null) {
-        let url = decodeURIComponent(urldata);
-        document.getElementById("createOptions").remove()
-        if (action === "connect") {
-          // Setup Connect!
-          cover.hidden = true;
-          resInfo.hidden = false;
-          document.getElementById("redirectOptions").remove()
-          document.getElementById("HeaderInfo").innerHTML = "You've been invited to join the steam-game session on:<br>" + url.replace(/\/.*/, "");
-          const joinBtn = document.getElementById("joinBtn");
-          const parts = url.split(":");
-          const domainInput = parts[0]
-          const portInput = parts[1]
-          const resp = await resolveDomain(domainInput)
-          if (!resp) {
-            joinBtn.disabled = true;
-            showInfo("Unable to resolve the domain. Try refreshing the page.", true);
-          } else {
-            url = resp + ":" + portInput
-            joinBtn.onclick = () => window.open("steam://connect/" + url, "_self");
-            showInfo("INFO: Never give your account information away!", true);
-          }
-          cover.hidden = false;
-          resInfo.hidden = true;
-        } else {
-          // Setup Redirect!redirectOptions
-          document.getElementById("connectOptions").remove();
-          document.getElementById("inBrowserBtn").onclick = () => window.open(url, "_self");
-          document.getElementById("inSteamBtn").onclick = () => window.open("steam://openurl/" + url, "_self");
-          document.getElementById("HeaderInfo").innerHTML = "Someone wants to send you to <a href=" + url + ">" + url + "</a>";
-          showInfo("Please only continue if you trust the site in question.", true);
-        }
-        return;
-      }
-      document.getElementById("redirectOptions").remove()
-      document.getElementById("connectOptions").remove()
-    }
-  </script>
-
-  <body>
-
-    <div class="cover" id="main">
-      <p id="HeaderInfo"></p>
-      <div id="connectOptions">
-        <button id="joinBtn">Join!</button>
-      </div>
-
-      <div id="redirectOptions">
-        <button id="inBrowserBtn" style="margin:10px;">Continue in browser</button>
-        <button id="inSteamBtn" class="linkSteam" style="margin:10px;">Open in Steam</button>
-      </div>
-
-
-      <div id="createOptions">
-        <div id="redirectURL" class="option">
-          <h2>Create a steam link:</h2>
-          <p>
-            steam://openurl/<input type="text" id="urlInput" placeholder="Enter URL">
-          </p>
-          <button id="copyURLBtn" onclick="CopyURL()">Validate and copy to clipboard</button>
-        </div>
-
-        <div id="redirectConnect" class="option">
-          <h2>Create a connect link:</h2>
-          <p>
-            <input type="text" id="domainInput" placeholder="Enter Domain or IP">:<input type="text" id="portInput" placeholder="(optional) Port">
-            <br>
-            Password: <input type="text" id="passInput" placeholder="(optional) Password">
-          </p>
-          <button id="connectBtn" onclick="CopyConnect()">Resolve and copy to clipboard</button>
-        </div>
-      </div>
-      <span id="InfoSpan" class="Note"></span>
-
-      <div>
-        <p style="font-size: 15px; color: #8c97a0;" id="disclaimer" class="Note"><br><br><br><br>
-        The website uses/generates steam:// links to open content in the Steam browser. We don't control what you'll see, so be careful clicking.<br>
-        We're not responsible for any issues that might arise from the content you access through these links.<br>
-        Use your judgment when using them, and be aware of who is sending them.
-        </p>
-        <br>
-        <br>
-        <br>
-        <p style="font-size: 12px; color: #8c97a0;" >© 2024 Chuckleberry Finn and Shurutsue. All rights reserved.</p>
-        <br>
-        <p id="easterEgg" style="font-size: 8px; color: #2c3038; vertical-align: bottom;" class="Note">ChucklingBerry Finn</p>
-      </div>
+      <a class="tool-card" href="tools/print-media-editor/">
+        <h3>Print Media Editor</h3>
+        <span class="launch">Open tool <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></span>
+      </a>
+      
 
     </div>
-    <div id="resolvingInfo" class="cover" hidden="true">
-      <p>Resolving...<br>Please wait.</p>
-    </div>
-  </body>
+  </div>
 
+  <br><br>
+  <footer>
+    <div class="copyright">© 2024&ndash;2025 Project Zomboid Community Modding.</div>
+  </footer>
+
+</body>
 </html>
