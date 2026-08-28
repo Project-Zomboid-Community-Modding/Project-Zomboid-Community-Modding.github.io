@@ -201,10 +201,12 @@
     margin-bottom: 3px;
     cursor: pointer;
     border: 1px solid transparent;
+    border-left: 3px solid transparent;
   }
   .el-item:hover { background: var(--panel-2); }
-  .el-item.selected { background: #556055; border-color: var(--accent); }
+  .el-item.selected { background: rgba(115,169,134,0.22); border-color: var(--accent); border-left-color: var(--accent); }
   .el-item.locked .label { opacity: 0.6; font-style: italic; }
+  .el-item.hidden-layer .label { opacity: 0.4; text-decoration: line-through; }
   .el-item .tag {
     font-size: 9px;
     text-transform: uppercase;
