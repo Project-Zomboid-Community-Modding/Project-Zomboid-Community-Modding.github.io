@@ -81,7 +81,7 @@
   .hero {
     max-width: 880px;
     margin: 0 auto;
-    padding: 64px 24px 24px;
+    padding: 32px 24px 24px;
     text-align: center;
   }
   .hero img {
@@ -117,15 +117,25 @@
   .tools {
     max-width: 960px;
     margin: 56px auto 0;
-    padding: 0 24px;
+    padding: 0 20px;
   }
   .tools h2 {
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-weight: 600;
     font-size: 26px;
     text-align: center;
     margin: 0 0 8px;
   }
+
+  .tool-note {
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 12px;
+    text-align: flex;
+    padding: 8px;
+    color: var(--ink-dim);
+  }
+
   .tools .sub {
     text-align: center;
     color: var(--ink-dim);
@@ -140,10 +150,11 @@
   .tool-card {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     background: var(--panel);
     border: 1px solid var(--panel-border);
     border-radius: 14px;
-    padding: 26px;
+    padding: 20px;
     text-decoration: none;
     color: var(--ink);
     transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
@@ -164,12 +175,14 @@
     margin-bottom: 16px;
   }
   .tool-card .tool-icon svg { width: 22px; height: 22px; }
+
   .tool-card h3 {
-    font-family: var(--serif);
-    font-weight: 600;
-    font-size: 21px;
-    margin: 0 0 8px;
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0 0 0px;
   }
+
   .tool-card p {
     font-size: 14px;
     line-height: 1.55;
@@ -183,7 +196,9 @@
     color: var(--accent);
     display: flex;
     align-items: center;
+    align-items: flex-end;
     gap: 6px;
+    margin-top: 8px;
   }
   .tool-card .launch svg { width: 14px; height: 14px; transition: transform 0.15s ease; }
   .tool-card:hover .launch svg { transform: translateX(3px); }
@@ -202,8 +217,9 @@
   footer {
     max-width: 960px;
     margin: 64px auto 0;
-    padding: 28px 24px 40px;
     text-align: center;
+    flex-direction: row;
+    justify-content: flex-end;
   }
   .discord-cta {
     display: inline-flex;
@@ -212,7 +228,6 @@
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--panel-border);
     border-radius: 999px;
-    padding: 10px 12px 10px 22px;
     text-decoration: none;
     color: var(--ink);
     margin-bottom: 28px;
