@@ -111,7 +111,20 @@ async function submitTranslationPR({ owner, repo, sourceLang, targetLang, files,
     writeOwner = await ensureFork(owner, repo, token);
   }
 
-  const branchName = await commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, targetLang, token });
+  let branchName;
+  try {
+    branchName = await commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, targetLang, token });
+  } catch (e) {
+    if (!canPush && /Resource not accessible by personal access token/i.test(e.message)) {
+      throw new Error(
+        "GitHub rejected the write to your fork. This is a known gap in fine-grained tokens: " +
+        "they can't be used to fork-and-PR a repo you don't already collaborate on, even after " +
+        "the fork exists. Sign out and sign in again with a classic token (repo scope) instead: " +
+        "https://github.com/settings/tokens/new?scopes=repo"
+      );
+    }
+    throw e;
+  }
 
   const me = await ghApiCall("/user", token);
   const prBody = [
