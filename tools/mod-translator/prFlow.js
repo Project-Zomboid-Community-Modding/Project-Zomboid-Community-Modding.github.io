@@ -63,10 +63,23 @@ async function ensureFork(owner, repo, token) {
  * itself, if the user can push, or their fork) and returns the branch name.
  */
 async function commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, targetLang, token }) {
-  const refData = await ghApiCall(`/repos/${writeOwner}/${repo}/git/ref/heads/${encodeURIComponent(baseBranch)}`, token);
-  const baseSha = refData.object.sha;
-  const baseCommit = await ghApiCall(`/repos/${writeOwner}/${repo}/git/commits/${baseSha}`, token);
-  const baseTreeSha = baseCommit.tree.sha;
+  const branchName = `translate/${targetLang.toLowerCase()}`;
+
+  let parentSha, baseTreeSha, isUpdate;
+  try {
+    const existingRef = await ghApiCall(`/repos/${writeOwner}/${repo}/git/ref/heads/${encodeURIComponent(branchName)}`, token);
+    parentSha = existingRef.object.sha;
+    const existingCommit = await ghApiCall(`/repos/${writeOwner}/${repo}/git/commits/${parentSha}`, token);
+    baseTreeSha = existingCommit.tree.sha;
+    isUpdate = true;
+  } catch (e) {
+    if (e.status !== 404) throw e;
+    const refData = await ghApiCall(`/repos/${writeOwner}/${repo}/git/ref/heads/${encodeURIComponent(baseBranch)}`, token);
+    parentSha = refData.object.sha;
+    const baseCommit = await ghApiCall(`/repos/${writeOwner}/${repo}/git/commits/${parentSha}`, token);
+    baseTreeSha = baseCommit.tree.sha;
+    isUpdate = false;
+  }
 
   const treeEntries = [];
   for (const f of files) {
@@ -83,18 +96,23 @@ async function commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, tar
   });
 
   const newCommit = await ghApiCall(`/repos/${writeOwner}/${repo}/git/commits`, token, "POST", {
-    message: `Add ${targetLang} translation${files.length > 1 ? "s" : ""}`,
+    message: `${isUpdate ? "Update" : "Add"} ${targetLang} translation${files.length > 1 ? "s" : ""}`,
     tree: newTree.sha,
-    parents: [baseSha],
+    parents: [parentSha],
   });
 
-  const branchName = `translate/${targetLang.toLowerCase()}-${Date.now()}`;
-  await ghApiCall(`/repos/${writeOwner}/${repo}/git/refs`, token, "POST", {
-    ref: `refs/heads/${branchName}`,
-    sha: newCommit.sha,
-  });
+  if (isUpdate) {
+    await ghApiCall(`/repos/${writeOwner}/${repo}/git/refs/heads/${encodeURIComponent(branchName)}`, token, "PATCH", {
+      sha: newCommit.sha,
+    });
+  } else {
+    await ghApiCall(`/repos/${writeOwner}/${repo}/git/refs`, token, "POST", {
+      ref: `refs/heads/${branchName}`,
+      sha: newCommit.sha,
+    });
+  }
 
-  return branchName;
+  return { branchName, isUpdate };
 }
 
 /**
@@ -111,9 +129,9 @@ async function submitTranslationPR({ owner, repo, sourceLang, targetLang, files,
     writeOwner = await ensureFork(owner, repo, token);
   }
 
-  let branchName;
+  let branchName, isUpdate;
   try {
-    branchName = await commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, targetLang, token });
+    ({ branchName, isUpdate } = await commitFilesToNewBranch({ writeOwner, repo, baseBranch, files, targetLang, token }));
   } catch (e) {
     if (!canPush && /Resource not accessible by personal access token/i.test(e.message)) {
       throw new Error(
@@ -127,6 +145,16 @@ async function submitTranslationPR({ owner, repo, sourceLang, targetLang, files,
   }
 
   const me = await ghApiCall("/user", token);
+  const headOwner = canPush ? owner : me.login;
+  const head = `${headOwner}:${branchName}`;
+
+  if (isUpdate) {
+    const existing = await ghApiCall(`/repos/${owner}/${repo}/pulls?head=${encodeURIComponent(head)}&state=open`, token);
+    if (existing.length > 0) {
+      return { pr_number: existing[0].number, pr_url: existing[0].html_url, via_fork: !canPush, updated: true };
+    }
+  }
+
   const prBody = [
     `Adds/updates the **${targetLang}** translation.`,
     "",
@@ -135,7 +163,7 @@ async function submitTranslationPR({ owner, repo, sourceLang, targetLang, files,
 
   const pr = await ghApiCall(`/repos/${owner}/${repo}/pulls`, token, "POST", {
     title: `Translation: ${targetLang}`,
-    head: canPush ? branchName : `${me.login}:${branchName}`,
+    head,
     base: baseBranch,
     body: prBody,
   });
