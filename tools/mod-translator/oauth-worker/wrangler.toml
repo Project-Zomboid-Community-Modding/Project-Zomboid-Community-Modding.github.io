@@ -1,4 +1,4 @@
-name = "pzmc-mod-translator-oauth"
+name = "pzmc-oauth"
 main = "index.js"
 compatibility_date = "2024-12-01"
 
@@ -7,5 +7,5 @@ compatibility_date = "2024-12-01"
 #
 # Non-secret vars:
 [vars]
-GITHUB_OAUTH_CLIENT_ID = "REPLACE_WITH_YOUR_OAUTH_APP_CLIENT_ID"
+GITHUB_OAUTH_CLIENT_ID = "Ov23liHVoQKJE3LtaS31"
 ALLOWED_ORIGINS = "https://project-zomboid-community-modding.github.io"

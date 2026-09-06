@@ -21,16 +21,17 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const pathname = url.pathname.replace(/\/{2,}/g, "/");
     const cors = getCorsHeaders(request, env);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors });
     }
 
-    if (url.pathname === '/token' && request.method === 'GET') {
+    if (pathname === '/token' && request.method === 'GET') {
       return handleTokenExchange(url, env, cors);
     }
-    if (url.pathname === '/health') {
+    if (pathname === '/health') {
       return json({ status: 'ok' }, 200, cors);
     }
     return json({ error: 'Not found' }, 404, cors);
