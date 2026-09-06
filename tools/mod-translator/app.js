@@ -8,28 +8,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   initEditorActions();
   await loadLanguages();
   const wasOAuthCallback = await checkGithubOAuthCallback();
-  if (!wasOAuthCallback) {
-    await restoreAndVerifyGithubAuth();
-    await loadRepoFromUrlParam();
-  }
+  if (!wasOAuthCallback) await restoreAndVerifyGithubAuth();
 });
-
-// Supports ?url=owner/repo, a full GitHub URL, or ?repo=... (alias).
-async function loadRepoFromUrlParam() {
-  const params = new URLSearchParams(window.location.search);
-  const raw = params.get("url") || params.get("repo");
-  if (!raw) return;
-
-  const parsed = parseRepoInput(raw);
-  if (!parsed) {
-    setSourceStatus(`Could not parse a repo from the URL parameter: "${raw}"`, "error");
-    return;
-  }
-
-  document.querySelector('.source-tab[data-tab="repo"]').click();
-  document.getElementById("repoInput").value = `${parsed.owner}/${parsed.repo}`;
-  await handleLoadRepo(parsed.owner, parsed.repo, params.get("branch"));
-}
 
 async function loadLanguages() {
   try {
@@ -155,6 +135,18 @@ function initEditorActions() {
   document.getElementById("loadFieldsBtn").addEventListener("click", handleLoadFields);
   document.getElementById("downloadZipBtn").addEventListener("click", handleDownload);
   document.getElementById("createPrBtn").addEventListener("click", handleCreatePR);
+
+  document.getElementById("uploadFolderBtn").addEventListener("click", () => {
+    document.getElementById("uploadFolderInput").click();
+  });
+  document.getElementById("uploadFolderInput").addEventListener("change", async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await applyUploadedTranslationFolder(files);
+    e.target.value = ""; // allow re-selecting the same folder later
+  });
+
+  document.getElementById("clearDraftBtn").addEventListener("click", clearCurrentDraft);
 }
 
 async function handleLoadFields() {
@@ -169,7 +161,7 @@ async function handleLoadFields() {
       ? await currentSource.readLanguageFiles(targetLang)
       : {};
 
-    renderFields(currentSourceData, targetData);
+    renderFields(currentSourceData, targetData, sourceLang, targetLang);
     document.getElementById("fieldsSection").classList.remove("hidden");
     document.getElementById("fieldsSection").scrollIntoView({ behavior: "smooth", block: "start" });
     setSourceStatus(`Loaded ${Object.keys(currentSourceData).length} file(s) for ${sourceLang} → ${targetLang}.`, "ok");

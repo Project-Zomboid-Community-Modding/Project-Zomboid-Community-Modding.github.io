@@ -73,30 +73,33 @@
           </div>
           <button class="btn btn-primary" id="loadFieldsBtn" type="button">Load fields</button>
         </div>
+      </section>
 
-        <div id="fieldsSection" class="hidden">
-          <h2 class="panel-title">3. Fill out translations</h2>
+      <section class="panel hidden" id="fieldsSection">
+        <h2 class="panel-title">3. Fill out translations</h2>
 
-          <div class="fields-toolbar">
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-bar-fill" id="fieldsProgressFill"></div></div>
-              <span class="progress-text" id="fieldsProgressText">0 / 0 translated</span>
-            </div>
-            <label class="checkbox-label">
-              <input type="checkbox" id="onlyMissingToggle">
-              Only show missing
-            </label>
+        <div class="fields-toolbar">
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-bar-fill" id="fieldsProgressFill"></div></div>
+            <span class="progress-text" id="fieldsProgressText">0 / 0 translated</span>
           </div>
-
-          <div id="fieldsContainer" class="fields-container"></div>
-
-          <div class="actions-bar">
-            <button class="btn btn-secondary" id="downloadZipBtn" type="button">Download .zip</button>
-            <button class="btn btn-primary hidden" id="createPrBtn" type="button">Create pull request</button>
-          </div>
-
-          <div class="pr-result" id="prResult"></div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="onlyMissingToggle">
+            Only show missing
+          </label>
+          <button class="btn btn-secondary" id="uploadFolderBtn" type="button">Upload existing translations…</button>
+          <input type="file" id="uploadFolderInput" webkitdirectory directory multiple hidden>
+          <button class="link-btn" id="clearDraftBtn" type="button">clear autosaved draft</button>
         </div>
+
+        <div id="fieldsContainer" class="fields-container"></div>
+
+        <div class="actions-bar">
+          <button class="btn btn-secondary" id="downloadZipBtn" type="button">Download .zip</button>
+          <button class="btn btn-primary hidden" id="createPrBtn" type="button">Create pull request</button>
+        </div>
+
+        <div class="pr-result" id="prResult"></div>
       </section>
 
       <section class="panel" id="view-auth">

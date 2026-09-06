@@ -131,8 +131,6 @@ async function submitTranslationPR({ owner, repo, sourceLang, targetLang, files,
     `Adds/updates the **${targetLang}** translation.`,
     "",
     `Source language: \`${sourceLang}\` · Files changed: ${files.length}`,
-    "",
-    "_Machine-assisted translations should be spot-checked by a native speaker before merging._",
   ].join("\n");
 
   const pr = await ghApiCall(`/repos/${owner}/${repo}/pulls`, token, "POST", {

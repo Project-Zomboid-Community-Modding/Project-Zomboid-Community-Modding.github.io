@@ -103,7 +103,21 @@ async function checkGithubOAuthCallback() {
   const statusEl = document.getElementById("ghAuthStatus");
   statusEl.textContent = "Finishing sign-in…";
   try {
-    const resp = await fetch(`${CONFIG.oauth.workerUrl}/token?code=${encodeURIComponent(code)}`);
+    if (!/^https?:\/\//i.test(CONFIG.oauth.workerUrl || "")) {
+      throw new Error(
+        `config.js's oauth.workerUrl ("${CONFIG.oauth.workerUrl}") is missing "https://" it needs ` +
+        `to be an absolute URL, e.g. https://pzmc-mod-translator-oauth.<subdomain>.workers.dev`
+      );
+    }
+    const workerUrl = (CONFIG.oauth.workerUrl || "").replace(/\/+$/, "");
+    const resp = await fetch(`${workerUrl}/token?code=${encodeURIComponent(code)}`);
+    const contentType = resp.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        `The worker at ${CONFIG.oauth.workerUrl} didn't return JSON (got "${contentType}" instead) ` +
+        `check that URL is the actual deployed worker, not a placeholder or an unrelated page.`
+      );
+    }
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.message || data.error || "Token exchange failed.");
     await signInGithub(data.access_token);
