@@ -95,19 +95,21 @@ function applyMissingFilter() {
   });
 }
 
-// Empty fields fall back to the source-language text so files stay valid
-// even when a translation run is only partial.
 function getExportData() {
   const out = {};
   document.querySelectorAll("#fieldsContainer .field-group").forEach(group => {
     const fileName = group.dataset.file;
     const source = editorSourceData[fileName] || {};
-    const fileOut = { ...source };
+    const fileOut = {};
+
+    for (const [key, value] of Object.entries(source)) {
+      if (typeof value !== "string") fileOut[key] = value;
+    }
 
     group.querySelectorAll(".field-row").forEach(row => {
       const key = row.dataset.key;
       const val = row.querySelector("textarea").value.trim();
-      fileOut[key] = val.length > 0 ? val : source[key];
+      if (val.length > 0) fileOut[key] = val;
     });
 
     out[fileName] = fileOut;
