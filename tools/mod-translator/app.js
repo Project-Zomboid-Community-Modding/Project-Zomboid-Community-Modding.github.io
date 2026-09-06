@@ -8,8 +8,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   initEditorActions();
   await loadLanguages();
   const wasOAuthCallback = await checkGithubOAuthCallback();
-  if (!wasOAuthCallback) await restoreAndVerifyGithubAuth();
+  if (!wasOAuthCallback) {
+    await restoreAndVerifyGithubAuth();
+    await loadRepoFromUrlParam();
+  }
 });
+
+async function loadRepoFromUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get("url") || params.get("repo");
+  if (!raw) return;
+
+  const parsed = parseRepoInput(raw);
+  if (!parsed) {
+    setSourceStatus(`Could not parse a repo from the URL parameter: "${raw}"`, "error");
+    return;
+  }
+
+  document.querySelector('.source-tab[data-tab="repo"]').click();
+  document.getElementById("repoInput").value = `${parsed.owner}/${parsed.repo}`;
+  await handleLoadRepo(parsed.owner, parsed.repo, params.get("branch"));
+}
 
 async function loadLanguages() {
   try {
