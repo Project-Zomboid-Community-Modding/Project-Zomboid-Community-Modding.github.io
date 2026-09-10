@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!wasOAuthCallback) {
     await restoreAndVerifyGithubAuth();
     await loadRepoFromUrlParam();
+  } else {
+    updateAuthUI();
   }
 });
 
