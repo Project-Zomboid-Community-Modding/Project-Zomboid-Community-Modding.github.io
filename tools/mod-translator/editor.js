@@ -183,7 +183,7 @@ async function applyUploadedTranslationFolder(fileList) {
   const parts = [];
   if (filled) parts.push(`${filled} blank field(s) filled in`);
   if (conflicts) parts.push(`${conflicts} conflict(s) to review below`);
-  setSourceStatus(parts.length ? parts.join(", ") + "." : "Nothing new found in that folder- everything already matched.", conflicts ? "loading" : "ok");
+  setSourceStatus(parts.length ? parts.join(", ") + "." : "Nothing new found in that folder - everything already matched.", conflicts ? "loading" : "ok");
 }
 
 function showFieldConflict(row, textarea, uploadedVal) {
@@ -241,8 +241,8 @@ const DRAFT_STORAGE_PREFIX = "pzmc_translator_draft:";
 function getDraftKey(sourceLang, targetLang) {
   if (!currentSource) return null;
   const sourceId = currentSource.type === "repo"
-    ? `repo:${currentSource.owner}/${currentSource.repo}@${currentSource.branch}`
-    : `local:${currentSource.label}`;
+    ? `repo:${currentSource.owner}/${currentSource.repo}@${currentSource.branch}:${currentSource.translateRoot}`
+    : `local:${currentSource.label}:${currentSource.translateRoot}`;
   return `${DRAFT_STORAGE_PREFIX}${sourceId}:${sourceLang}->${targetLang}`;
 }
 

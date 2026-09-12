@@ -67,23 +67,26 @@ async function loadGithubSource(owner, repo, branchInput, token) {
     throw new Error("No Translate/<LANG>/*.json folder found in this repo.");
   }
   roots.sort((a, b) => Object.keys(b.languages).length - Object.keys(a.languages).length);
-  const chosen = roots[0];
 
   return {
     type: "repo",
     owner,
     repo,
     branch,
-    translateRoot: chosen.translateRoot,
-    languages: chosen.languages,
     label: `${owner}/${repo}`,
     canWrite: !!token, // actual push permission is checked lazily in prFlow.js
+    mods: roots.map(r => ({ label: guessModLabel(r.translateRoot), translateRoot: r.translateRoot, languages: r.languages })),
+    selectedModIndex: 0,
+
+    get translateRoot() { return this.mods[this.selectedModIndex].translateRoot; },
+    get languages() { return this.mods[this.selectedModIndex].languages; },
 
     async readLanguageFiles(langCode) {
-      const relPaths = chosen.languages[langCode] || [];
+      const mod = this.mods[this.selectedModIndex];
+      const relPaths = mod.languages[langCode] || [];
       const out = {};
       for (const relPath of relPaths) {
-        const fullPath = `${chosen.translateRoot}/${relPath}`;
+        const fullPath = `${mod.translateRoot}/${relPath}`;
         const withinLangPath = relPath.split("/").slice(1).join("/");
         try {
           const text = await fetchRawFile(owner, repo, branch, fullPath, token);

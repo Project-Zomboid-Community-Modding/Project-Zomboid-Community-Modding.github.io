@@ -7,8 +7,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   initSourceActions();
   initEditorActions();
   await loadLanguages();
-  const wasOAuthCallback = await checkGithubOAuthCallback();
-  if (!wasOAuthCallback) {
+
+  const wasGithubOAuthCallback = await checkGithubOAuthCallback();
+  if (!wasGithubOAuthCallback) {
     await restoreAndVerifyGithubAuth();
     await loadRepoFromUrlParam();
   } else {
@@ -111,13 +112,29 @@ async function handleLoadRepo(owner, repo, branch) {
 }
 
 function onSourceLoaded() {
+  const modPickerRow = document.getElementById("modPickerRow");
+  const modSelect = document.getElementById("modSelect");
+
+  if (currentSource.mods && currentSource.mods.length > 1) {
+    modPickerRow.classList.remove("hidden");
+    modSelect.innerHTML = currentSource.mods
+      .map((m, i) => `<option value="${i}">${escapeHtml(m.label)} (${Object.keys(m.languages).length} language(s))</option>`)
+      .join("");
+    modSelect.value = currentSource.selectedModIndex;
+  } else {
+    modPickerRow.classList.add("hidden");
+  }
+
   const availableLangs = Object.keys(currentSource.languages).sort();
   if (availableLangs.length === 0) {
     setSourceStatus("Found a Translate folder, but no recognizable language subfolders.", "error");
     return;
   }
 
-  setSourceStatus(`Loaded ${currentSource.label} - found ${availableLangs.length} language folder(s).`, "ok");
+  const modNote = currentSource.mods && currentSource.mods.length > 1
+    ? ` - "${currentSource.mods[currentSource.selectedModIndex].label}"`
+    : "";
+  setSourceStatus(`Loaded ${currentSource.label}${modNote} - found ${availableLangs.length} language folder(s).`, "ok");
   document.getElementById("editorMeta").innerHTML = `<span class="meta-name">${escapeHtml(currentSource.label)}</span>`;
 
   populateLangSelects(availableLangs);
@@ -156,6 +173,11 @@ function initEditorActions() {
   document.getElementById("loadFieldsBtn").addEventListener("click", handleLoadFields);
   document.getElementById("downloadZipBtn").addEventListener("click", handleDownload);
   document.getElementById("createPrBtn").addEventListener("click", handleCreatePR);
+
+  document.getElementById("modSelect").addEventListener("change", (e) => {
+    currentSource.selectedModIndex = Number(e.target.value);
+    onSourceLoaded();
+  });
 
   document.getElementById("uploadFolderBtn").addEventListener("click", () => {
     document.getElementById("uploadFolderInput").click();
@@ -206,6 +228,7 @@ function buildRedirectState() {
     owner: currentSource.owner,
     repo: currentSource.repo,
     branch: currentSource.branch,
+    selectedModIndex: currentSource.selectedModIndex,
     sourceLang: document.getElementById("sourceLangSelect").value,
     targetLang: document.getElementById("targetLangSelect").value,
   };
@@ -218,6 +241,10 @@ function buildRedirectState() {
 async function restoreAppStateAfterOAuth(state) {
   document.getElementById("repoInput").value = `${state.owner}/${state.repo}`;
   await handleLoadRepo(state.owner, state.repo, state.branch);
+  if (typeof state.selectedModIndex === "number" && currentSource.mods && state.selectedModIndex < currentSource.mods.length) {
+    currentSource.selectedModIndex = state.selectedModIndex;
+    onSourceLoaded();
+  }
   if (state.sourceLang) document.getElementById("sourceLangSelect").value = state.sourceLang;
   if (state.targetLang) document.getElementById("targetLangSelect").value = state.targetLang;
 }

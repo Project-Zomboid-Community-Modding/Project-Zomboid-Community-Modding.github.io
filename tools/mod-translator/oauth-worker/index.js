@@ -1,5 +1,5 @@
 /**
- * Mod Translator OAuth relay (Cloudflare Worker)
+ * Mod Translator OAuth relay - Cloudflare Worker
  *
  * The ONLY job this worker does: trade an OAuth "code" for an access
  * token using the GitHub OAuth App's client secret. That secret can't

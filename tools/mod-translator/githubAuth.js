@@ -28,7 +28,7 @@ function getGithubToken() {
 function signOutGithub() {
   githubAuth = { token: null, login: null, avatar: null };
   sessionStorage.removeItem(GH_TOKEN_STORAGE_KEY);
-  updateGithubAuthUI();
+  updateAuthUI();
 }
 
 /** Validates a token against GET /user and stores it in memory + sessionStorage if valid. */
@@ -43,7 +43,7 @@ async function signInGithub(token) {
   const user = await resp.json();
   githubAuth = { token, login: user.login, avatar: user.avatar_url };
   saveGithubAuth();
-  updateGithubAuthUI();
+  updateAuthUI();
   return user;
 }
 
@@ -105,7 +105,7 @@ async function checkGithubOAuthCallback() {
   try {
     if (!/^https?:\/\//i.test(CONFIG.oauth.workerUrl || "")) {
       throw new Error(
-        `config.js's oauth.workerUrl ("${CONFIG.oauth.workerUrl}") is missing "https://" it needs ` +
+        `config.js's oauth.workerUrl ("${CONFIG.oauth.workerUrl}") is missing "https://" - it needs ` +
         `to be an absolute URL, e.g. https://pzmc-mod-translator-oauth.<subdomain>.workers.dev`
       );
     }
@@ -114,7 +114,7 @@ async function checkGithubOAuthCallback() {
     const contentType = resp.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
       throw new Error(
-        `The worker at ${CONFIG.oauth.workerUrl} didn't return JSON (got "${contentType}" instead) ` +
+        `The worker at ${CONFIG.oauth.workerUrl} didn't return JSON (got "${contentType}" instead) - ` +
         `check that URL is the actual deployed worker, not a placeholder or an unrelated page.`
       );
     }
@@ -134,7 +134,7 @@ async function checkGithubOAuthCallback() {
   return true;
 }
 
-function updateGithubAuthUI() {
+function updateAuthUI() {
   const signedOutView = document.getElementById("ghAuthSignedOut");
   const signedInView = document.getElementById("ghAuthSignedIn");
   const nameEl = document.getElementById("ghAuthName");

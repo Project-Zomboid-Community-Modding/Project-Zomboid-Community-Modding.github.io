@@ -13,7 +13,6 @@ async function loadLocalSource(fileList) {
     );
   }
   roots.sort((a, b) => Object.keys(b.languages).length - Object.keys(a.languages).length);
-  const chosen = roots[0];
 
   const fileByPath = new Map();
   files.forEach(f => fileByPath.set(f.webkitRelativePath || f.name, f));
@@ -22,16 +21,20 @@ async function loadLocalSource(fileList) {
 
   return {
     type: "local",
-    translateRoot: chosen.translateRoot,
-    languages: chosen.languages,
     label: folderName,
     canWrite: false, // no PR/commit path for a local folder - download only
+    mods: roots.map(r => ({ label: guessModLabel(r.translateRoot), translateRoot: r.translateRoot, languages: r.languages })),
+    selectedModIndex: 0,
+
+    get translateRoot() { return this.mods[this.selectedModIndex].translateRoot; },
+    get languages() { return this.mods[this.selectedModIndex].languages; },
 
     async readLanguageFiles(langCode) {
-      const relPaths = chosen.languages[langCode] || [];
+      const mod = this.mods[this.selectedModIndex];
+      const relPaths = mod.languages[langCode] || [];
       const out = {};
       for (const relPath of relPaths) {
-        const fullPath = `${chosen.translateRoot}/${relPath}`;
+        const fullPath = `${mod.translateRoot}/${relPath}`;
         const withinLangPath = relPath.split("/").slice(1).join("/");
         const file = fileByPath.get(fullPath);
         if (!file) continue;

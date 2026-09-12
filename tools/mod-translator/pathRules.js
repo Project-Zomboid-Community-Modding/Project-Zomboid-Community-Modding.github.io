@@ -20,6 +20,15 @@ function splitPath(p) {
   return p.split(/[/\\]+/).filter(Boolean);
 }
 
+function guessModLabel(translateRoot) {
+  const parts = splitPath(translateRoot);
+  const modsIdx = parts.findIndex(p => p.toLowerCase() === "mods");
+  if (modsIdx !== -1 && modsIdx + 1 < parts.length) {
+    return parts[modsIdx + 1];
+  }
+  return translateRoot;
+}
+
 // applyB41Filter is meant for local scans of a real Steam Workshop /
 // mods-development directory, where old and new mods may be mixed
 // together. It's skipped for GitHub repos, which are curated mod source
